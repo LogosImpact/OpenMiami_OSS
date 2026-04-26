@@ -1,0 +1,14 @@
+{
+  "name": "@openmiami/api",
+  "version": "0.1.0",
+  "description": "Serverless API routes for api.openmiami.org. Deployable to Vercel or wrapped in a Next.js app.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}

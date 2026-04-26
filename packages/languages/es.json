@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "language": "es",
+    "name": "Español",
+    "rtl": false
+  },
+  "common": {
+    "search_placeholder": "¿En qué te podemos ayudar?",
+    "search_button": "Buscar",
+    "loading": "Cargando…",
+    "error_generic": "Algo salió mal. Inténtalo de nuevo.",
+    "no_results": "No encontramos resultados. Prueba con otras palabras o sugiere un recurso.",
+    "view_source": "Ver fuente",
+    "contact": "Contacto",
+    "website": "Sitio web",
+    "languages_offered": "Idiomas disponibles"
+  },
+  "categories": {
+    "housing": "Vivienda",
+    "food": "Comida",
+    "health": "Salud",
+    "mental_health": "Salud mental",
+    "small_business": "Pequeños negocios",
+    "workforce": "Empleo y formación",
+    "education": "Educación",
+    "youth": "Jóvenes",
+    "seniors": "Personas mayores",
+    "immigration": "Inmigración",
+    "legal": "Ayuda legal",
+    "arts_culture": "Arte y cultura",
+    "climate_resilience": "Clima y resiliencia",
+    "transit": "Transporte",
+    "utilities": "Servicios públicos",
+    "civic_311": "Ciudad y 311",
+    "emergency": "Emergencia"
+  },
+  "suggest": {
+    "title": "Sugerir un recurso",
+    "intro": "¿Conoces un servicio que debería estar en OpenMiami? Envíalo aquí. Un moderador lo revisará antes de publicarlo.",
+    "name_label": "Nombre del recurso",
+    "url_label": "Sitio web (enlace público)",
+    "description_label": "¿Qué hace?",
+    "category_label": "Categoría",
+    "language_label": "Idiomas disponibles",
+    "submit": "Enviar sugerencia",
+    "thanks": "Gracias. Tu sugerencia está en la cola de moderación."
+  },
+  "miagpt": {
+    "title": "MiaGPT",
+    "tagline": "Asistente cívico para Miami — multilingüe.",
+    "input_placeholder": "Pregunta sobre vivienda, comida, 311, pequeños negocios…",
+    "privacy_note": "MiaGPT no guarda tus mensajes. No incluyas datos personales."
+  }
+}

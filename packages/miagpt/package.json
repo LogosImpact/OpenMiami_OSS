@@ -1,0 +1,23 @@
+{
+  "name": "@openmiami/miagpt",
+  "version": "0.1.0",
+  "description": "MiaGPT — multilingual Claude wrapper for OpenMiami / MiamiVerse civic chat (EN/HT/ES/FR).",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./tools": "./tools.js"
+  },
+  "files": [
+    "index.js",
+    "tools.js",
+    "prompts/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0"
+  }
+}
