@@ -20,6 +20,53 @@ begin;
 -- (No `set local role` — assumes service role / migration context.)
 
 -- ============================================================
+-- Verses (CityVerse hierarchy)
+-- sustainacities → floridaverse → miamiverse → { openmiami, lhrt }
+-- ============================================================
+insert into public.verses (slug, name, kind, parent_id, default_languages, metadata) values
+('sustainacities', 'SustainaCities', 'platform', null, array['en'], jsonb_build_object('description','Open civic-tech platform for cities and regions.'))
+on conflict (slug) do nothing;
+
+insert into public.verses (slug, name, kind, parent_id, default_languages, metadata)
+select 'floridaverse', 'FloridaVerse', 'state',
+  (select id from public.verses where slug = 'sustainacities'),
+  array['en','es','ht'],
+  jsonb_build_object('jurisdiction','State of Florida')
+on conflict (slug) do nothing;
+
+insert into public.verses (slug, name, kind, parent_id, default_languages, metadata)
+select 'miamiverse', 'MiamiVerse', 'metro',
+  (select id from public.verses where slug = 'floridaverse'),
+  array['en','es','ht'],
+  jsonb_build_object('jurisdiction','Miami-Dade County / City of Miami')
+on conflict (slug) do nothing;
+
+insert into public.verses (slug, name, kind, parent_id, default_languages, metadata)
+select 'openmiami', 'OpenMiami', 'neighborhood',
+  (select id from public.verses where slug = 'miamiverse'),
+  array['en','es','ht','fr'],
+  jsonb_build_object('jurisdiction','City of Miami')
+on conflict (slug) do nothing;
+
+insert into public.verses (slug, name, kind, parent_id, default_languages, metadata)
+select 'lhrt', 'Little Haiti Revitalization Trust', 'neighborhood',
+  (select id from public.verses where slug = 'miamiverse'),
+  array['en','ht','fr'],
+  jsonb_build_object('jurisdiction','LHRT boundary, City of Miami')
+on conflict (slug) do nothing;
+
+-- Convenience locals so each insert below can pick the right verse.
+do $$
+declare
+  v_lhrt uuid := (select id from public.verses where slug = 'lhrt');
+  v_openmiami uuid := (select id from public.verses where slug = 'openmiami');
+  v_miamiverse uuid := (select id from public.verses where slug = 'miamiverse');
+begin
+  -- Defer assignment — we update after the inserts below.
+  perform 1;
+end $$;
+
+-- ============================================================
 -- 5 — Little Haiti Revitalization Trust (LHRT) programs
 -- Source root: https://www.miamigov.com/Government/Boards-Committees/Little-Haiti-Revitalization-Trust
 -- ============================================================
@@ -314,5 +361,29 @@ insert into public.resources (name, provider_type, category, description, eligib
  jsonb_build_object('website','https://www.catalystmiami.org/'),
  'https://www.catalystmiami.org/',
  now());
+
+-- ============================================================
+-- Assign each seeded resource to its verse.
+-- ============================================================
+-- LHRT-specific programs → lhrt verse
+update public.resources r
+set verse_id = v.id
+from public.verses v
+where v.slug = 'lhrt'
+  and r.provider_type = 'lhrt';
+
+-- City of Miami services + Little Haiti Cultural Complex → openmiami verse
+update public.resources r
+set verse_id = v.id
+from public.verses v
+where v.slug = 'openmiami'
+  and (r.provider_type = 'city_of_miami' or r.name = 'Little Haiti Cultural Complex');
+
+-- Everything else (Miami-Dade county, regional nonprofits) → miamiverse
+update public.resources r
+set verse_id = v.id
+from public.verses v
+where v.slug = 'miamiverse'
+  and r.verse_id is null;
 
 commit;
