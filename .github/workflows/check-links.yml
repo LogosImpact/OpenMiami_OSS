@@ -1,0 +1,41 @@
+name: Link health check
+
+on:
+  schedule:
+    # Nightly at 07:30 UTC (3:30am ET in summer)
+    - cron: '30 7 * * *'
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Max resources to check this run'
+        required: false
+        default: '50'
+
+jobs:
+  check:
+    name: Walk resources, log link health
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Sanity-check secrets
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set as repo secrets"
+            exit 1
+          fi
+
+      - name: Check links
+        run: node scripts/check-links.js --limit=${{ github.event.inputs.limit || '50' }}

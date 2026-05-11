@@ -1,9 +1,10 @@
 // POST /suggest
-// Public submission endpoint. RLS allows insert-only on resource_suggestions.
+// Public submission endpoint. RLS allows insert-only on resource_suggestions
+// in Supabase mode; in Neon mode the route's insert is the only write path.
 // Body: { name, source_url, description, category?, provider_type?, languages?, contact?, submitter_note? }
 
 import { applyCors } from '../_lib/cors.js';
-import { supabaseAnon } from '../_lib/supabase.js';
+import { insertSuggestion } from '../_lib/db.js';
 import { sendJson, sendError, readJsonBody } from '../_lib/json.js';
 
 const CATEGORIES = new Set([
@@ -58,22 +59,17 @@ export default async function handler(req, res) {
   if (errs.length) return sendError(res, 400, 'invalid_input', errs.join('; '));
 
   try {
-    const sb = supabaseAnon();
-    const { data, error } = await sb
-      .from('resource_suggestions')
-      .insert({
-        name,
-        provider_type,
-        category,
-        description: description || null,
-        languages,
-        contact,
-        source_url: source_url || null,
-        submitter_note,
-      })
-      .select('id, status, created_at')
-      .single();
-    if (error) return sendError(res, 500, 'db_error', error.message);
+    const { data, error } = await insertSuggestion({
+      name,
+      provider_type,
+      category,
+      description: description || null,
+      languages,
+      contact,
+      source_url: source_url || null,
+      submitter_note,
+    });
+    if (error) return sendError(res, 500, 'db_error', error);
     return sendJson(res, 201, { data });
   } catch (e) {
     return sendError(res, 500, 'unexpected', e.message);

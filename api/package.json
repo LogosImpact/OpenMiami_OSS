@@ -1,7 +1,7 @@
 {
   "name": "@openmiami/api",
-  "version": "0.1.0",
-  "description": "Serverless API routes for api.openmiami.org. Deployable to Vercel or wrapped in a Next.js app.",
+  "version": "0.2.0",
+  "description": "Serverless API routes for api.openmiami.org. Deployable to Vercel; works against Supabase or vanilla Postgres (Neon) via api/_lib/db.js.",
   "license": "MIT",
   "type": "module",
   "private": true,
@@ -9,6 +9,9 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.0"
+    "@anthropic-ai/sdk": "^0.30.0",
+    "@openmiami/miagpt": "*",
+    "@supabase/supabase-js": "^2.45.0",
+    "pg": "^8.12.0"
   }
 }

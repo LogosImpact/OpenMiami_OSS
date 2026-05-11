@@ -39,7 +39,10 @@ function loadSystemPrompt(lang) {
 
 export function createMiaGPT({
   apiKey = process.env.ANTHROPIC_API_KEY,
+  // Sonnet drives reasoning + tool selection; Haiku is the cheaper option for
+  // downstream ranking calls (matches the live demo at impact-lab-miami).
   model = 'claude-sonnet-4-6',
+  rankerModel = 'claude-haiku-4-5-20251001',
   maxTokens = 1024,
   tools = defaultTools,
 } = {}) {
@@ -101,7 +104,42 @@ export function createMiaGPT({
     yield { type: 'done', stop_reason: stopReason, usage };
   }
 
-  return { stream, supportedLanguages: SUPPORTED_LANGS };
+  /**
+   * Rank a list of candidate resources against the user's intent using the
+   * cheaper Haiku model. Returns the same array re-ordered with a numeric
+   * `_rank` field. Hosts may use this to refine `query_resources` results
+   * before showing them to the user.
+   */
+  async function rank({ candidates, intent, lang = 'en' }) {
+    if (!Array.isArray(candidates) || candidates.length <= 1) return candidates ?? [];
+    const language = SUPPORTED_LANGS.includes(lang) ? lang : 'en';
+    const system = loadSystemPrompt(language);
+    const minimal = candidates.map((c, i) => ({
+      i, name: c.name, category: c.category, languages: c.languages,
+      description: (c.description ?? '').slice(0, 200),
+    }));
+    const prompt = [
+      'Re-rank these civic resources for the given user intent.',
+      `Intent: ${JSON.stringify(intent)}`,
+      `Candidates: ${JSON.stringify(minimal)}`,
+      'Reply with a JSON array of objects { i, score } where score is 0..100. JSON only.',
+    ].join('\n\n');
+    const msg = await client.messages.create({
+      model: rankerModel,
+      max_tokens: 512,
+      system,
+      messages: [{ role: 'user', content: prompt }],
+    });
+    const text = msg.content.find((b) => b.type === 'text')?.text ?? '[]';
+    let scored = [];
+    try { scored = JSON.parse(text); } catch { return candidates; }
+    const scoreById = new Map(scored.map((s) => [s.i, s.score]));
+    return candidates
+      .map((c, i) => ({ ...c, _rank: scoreById.get(i) ?? 50 }))
+      .sort((a, b) => b._rank - a._rank);
+  }
+
+  return { stream, rank, supportedLanguages: SUPPORTED_LANGS };
 }
 
 export { defaultTools as tools };

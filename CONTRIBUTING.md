@@ -47,3 +47,13 @@ Please **do not** open a public issue for security concerns. Email `security@log
 ## Maintainers
 
 The repository is maintained by the LogosImpact OpenMiami team. Decisions are made by rough consensus; tied or contentious calls go to a maintainer vote.
+
+Current maintainers (GitHub handles; reach the team via the [LogosImpact](https://github.com/LogosImpact) org):
+
+- `@grantkurz` — backend, `grantkurz/impact-lab-backend`
+- `@sol_ar` — frontend, deploy, `arevlo/impact-lab`
+- `@MiamiSilvio` — Logos Capital, partnerships
+- `@marshmallow_mina` — LHRT/LHRF portal
+- `@ather.techie` — generalist
+
+Personal contact information is not listed here. Use Discord or the GitHub org for coordination.

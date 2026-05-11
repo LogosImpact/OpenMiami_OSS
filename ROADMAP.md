@@ -1,5 +1,9 @@
 # Roadmap
 
+## Ground-truth feedback target
+
+The next external feedback we're solving for is from **MLHT** (Miami Little Haiti Trust) on the live demo at https://impact-lab-miami.vercel.app/ and the OpenMiami_OSS modules that complement it. Until that feedback lands, treat new scope as proposals to discuss, not commitments. The Sonnet-reasoning / Haiku-ranking split, the mobile-first contract, and BYOK chat are non-negotiable for that review — confirmed during the workshop and on Discord (Sol, 2026-05-02).
+
 ## Now (consolidation phase — this branch)
 
 - [x] Scaffold monorepo (`api/`, `db/`, `packages/`, `apps/`, `docs/`).
@@ -13,8 +17,14 @@
 - [x] **Link-health + ranking** — `resource_url_checks` log + `health_score` trigger + `scripts/check-links.js`.
 - [x] **Privacy doc + Web3 considerations doc.**
 - [x] **ESLint rule banning `localStorage` / `sessionStorage` for `apps/*`.**
-- [ ] Import `arevlo/impact-lab` into the appropriate `apps/*` slot once access is granted (currently 404 / no-auth in the consolidation sandbox).
-- [ ] Import the second hackathon repo (Grant has it) once it surfaces.
+- [x] **Root monorepo plumbing** — `package.json` with workspaces, `.env.example`, `.gitignore`, `docker-compose.yml`, dev-bootstrap script.
+- [x] **Neon-compatible DB shim** — `api/_lib/db.js` runs against Supabase (primary) or Neon (alternative).
+- [x] **Mobile-first front-end stub** — `apps/miamiverse/` Vite + React app with verse switcher, health-score badges, BYOK chat.
+- [x] **`/chat` SSE route + tool-loop** — server-side `query_resources` execution; Sonnet for reasoning, Haiku for ranking.
+- [x] **CI workflows** — `ci.yml` (schema apply + lint + tests) and nightly `check-links.yml`.
+- [x] **Handoff doc** — `docs/handoff.md` for the impact-lab-backend consolidation conversation.
+- [ ] Import `grantkurz/impact-lab-backend` once access is granted.
+- [ ] Import `arevlo/impact-lab` once access is granted (currently private).
 
 ## Next (data + product MVP)
 

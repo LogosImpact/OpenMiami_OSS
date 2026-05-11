@@ -80,6 +80,7 @@ Search and list verified resources.
 | `category` | string  | —       | One of the `Resource.category` values.            |
 | `provider` | string  | —       | One of the `Resource.provider_type` values.       |
 | `language` | string  | —       | `en\|ht\|es\|fr`. Filters by languages array.     |
+| `verse`    | string  | —       | Verse slug (`lhrt`, `openmiami`, `miamiverse`, `floridaverse`, `sustainacities`). Rolls up to include the slug's verse and all descendants. |
 | `zipcode`  | string  | —       | 5-digit ZIP. Used for proximity ranking.          |
 | `limit`    | integer | 20      | 1..50.                                            |
 | `offset`   | integer | 0       | For pagination.                                   |
@@ -202,6 +203,59 @@ curl -X POST 'https://api.openmiami.org/suggest' \
     "languages": ["en","es","ht"],
     "contact": { "website": "https://example.org" },
     "submitter_note": "I volunteer here"
+  }'
+```
+
+---
+
+## `POST /chat`
+
+BYOK streaming chat. Wraps the MiaGPT package's tool-loop server-side: when the model requests `query_resources`, the route executes it against the same `listResources` helper used by `/resources` and feeds the result back into the next turn. Frames are emitted as Server-Sent Events.
+
+### Request body
+
+```json
+{
+  "messages": [
+    { "role": "user", "content": "Where can I get free food in Little Haiti?" }
+  ],
+  "lang": "en",
+  "anthropicKey": "sk-ant-..."
+}
+```
+
+- `anthropicKey` is required (or set `ANTHROPIC_API_KEY` server-side for dev). The key is **never persisted** server-side.
+- `lang` is one of `en | ht | es | fr` (default `en`).
+
+### Response (SSE)
+
+```
+data: {"type":"text","text":"There are a few options…"}
+
+data: {"type":"tool_use","name":"query_resources","input":{"category":"food"}}
+
+data: {"type":"tool_result","name":"query_resources","count":3}
+
+data: {"type":"text","text":"… **Feeding South Florida** …"}
+
+data: {"type":"done"}
+```
+
+Error frames:
+
+```
+data: {"type":"error","message":"…"}
+```
+
+### Example
+
+```bash
+curl -N -X POST http://localhost:3000/chat \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "messages": [{"role":"user","content":"free food in Little Haiti"}],
+    "lang": "en",
+    "anthropicKey": "sk-ant-..."
   }'
 ```
 

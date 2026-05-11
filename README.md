@@ -4,7 +4,7 @@
 
 OpenMiami_OSS is the consolidated home for the OpenMiami / MiamiVerse stack: a moderated directory of civic resources, a multilingual chat assistant (MiaGPT), and the front ends that consume both. It is operated under the [LogosImpact](https://github.com/LogosImpact) GitHub organization.
 
-> _Status: scaffolding. The backend, API, MiaGPT package, and language packs are in place. The two front-end apps (`apps/miamiverse`, `apps/lhrt-finder`) are placeholders awaiting consolidation from their original hackathon repos._
+> _Status: the backend, API (`/resources`, `/categories`, `/suggest`, `/chat`), MiaGPT package, language packs, multi-CityVerse schema, link-health, and a mobile-first stub front end are in place. A live production demo of the broader team's work runs at https://impact-lab-miami.vercel.app/ — see [`docs/handoff.md`](docs/handoff.md) for the consolidation conversation._
 
 ## What's here
 
@@ -31,23 +31,25 @@ OpenMiami_OSS is the consolidated home for the OpenMiami / MiamiVerse stack: a m
 ## Quickstart (developers)
 
 ```bash
-# 1. Database
-psql "$DATABASE_URL" -f db/schema.sql
-psql "$DATABASE_URL" -f db/seed.sql
-
-# 2. API (Vercel-style functions)
-cd api && npm install
-SUPABASE_URL=... SUPABASE_ANON_KEY=... vercel dev
-
-# 3. MiaGPT package (used inside front ends)
-cd packages/miagpt && npm install
+cp .env.example .env       # edit if you want to point at a real Supabase project
+docker compose up -d db    # local Postgres + PostGIS, auto-seeded
+npm install                # installs all workspaces
+cd apps/miamiverse && npm run dev   # mobile-first stub on :5173
+# In another terminal, from api/:
+cd api && npx vercel dev   # API on :3000
 ```
+
+See [`docs/quickstart.md`](docs/quickstart.md) for the full 10-minute path, including the chat view and link-health.
 
 ## Documentation
 
+- [Quickstart](docs/quickstart.md)
 - [Architecture](docs/architecture.md)
 - [API contract](docs/api-contract.md)
+- [Handoff to `impact-lab-backend`](docs/handoff.md)
 - [Language pack guide](docs/language-pack-guide.md)
+- [Privacy](docs/privacy.md)
+- [Web3 considerations](docs/web3-considerations.md)
 - [Roadmap](ROADMAP.md)
 - [Contributing](CONTRIBUTING.md)
 - [History](HISTORY.md)

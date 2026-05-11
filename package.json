@@ -1,0 +1,30 @@
+{
+  "name": "openmiami-oss",
+  "version": "0.3.0",
+  "private": true,
+  "description": "OpenMiami_OSS monorepo — civic stack for OpenMiami / MiamiVerse / LHRT.",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "api",
+    "packages/*",
+    "apps/*",
+    "scripts"
+  ],
+  "scripts": {
+    "db:up": "docker compose up -d db",
+    "db:down": "docker compose down",
+    "db:reset": "bash scripts/dev-bootstrap.sh",
+    "dev": "npm run dev --workspace=@openmiami/miamiverse",
+    "dev:api": "vercel dev --cwd api",
+    "lint": "eslint \"apps/**/src/**/*.{js,jsx,ts,tsx}\"",
+    "test": "node --test api/__tests__/*.test.js packages/miagpt/__tests__/*.test.js",
+    "check-links": "node scripts/check-links.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0"
+  }
+}

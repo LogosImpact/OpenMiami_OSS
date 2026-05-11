@@ -1,22 +1,39 @@
-# MiamiVerse — frontend (placeholder)
+# MiamiVerse — front-end stub
 
-This directory is the consolidation target for the **MiamiVerse** hackathon repo. At this point in the OSS consolidation, no source has been imported here yet — see `HISTORY.md`.
+A small, intentionally throwaway Vite + React + TypeScript app that exercises the OpenMiami_OSS backend end-to-end. It is mobile-first (base styles target ≤ 420px), shows search results with health-score badges, supports the multi-verse switcher and four UI languages (EN / HT / ES / FR), and includes a BYOK MiaGPT chat that mirrors the pattern used by the live demo at https://impact-lab-miami.vercel.app/.
 
-## Import steps (once a source repo is identified)
+> **Status:** stub for community feedback. The production MiamiVerse lives at https://impact-lab-miami.vercel.app/. When access to `grantkurz/impact-lab-backend` is granted, the production source replaces this directory — see [`IMPORTING.md`](./IMPORTING.md) for the swap procedure.
 
-1. Copy the production source into this directory **without** copying any of the following:
-   - `.git/`
-   - `.env*`
-   - `node_modules/`
-   - any vendored secrets, deploy keys, or hosted credentials
-2. Update `package.json`:
-   - `"name": "@openmiami/miamiverse"`
-   - Move shared dependencies (`@openmiami/miagpt`, `@openmiami/languages`) to relative workspace deps.
-3. Wire the API base URL through an env var (`NEXT_PUBLIC_API_BASE` / `VITE_API_BASE`). Default to `https://api.openmiami.org`.
-4. Replace any hard-coded English strings with lookups against `@openmiami/languages` (see `docs/language-pack-guide.md`).
-5. Confirm there is **no `localStorage` usage** — React state only, per project policy.
-6. Add a top-level `README.md` (replacing this file) with: dev quickstart, env vars, deploy target (Vercel).
+## Run locally
 
-## Deploy target
+From the repo root:
 
-Vercel — `miamiverse.world`.
+```bash
+cp .env.example .env       # set VITE_API_BASE if your API isn't on :3000
+docker compose up -d db    # Postgres + PostGIS, auto-seeded
+npm install                # workspace install
+cd api && vercel dev       # or whatever runs the api/ routes locally
+cd apps/miamiverse && npm run dev
+```
+
+Open http://localhost:5173. The chat view will prompt you to paste an Anthropic API key — it lives only in React state, never in `localStorage` (project policy and ESLint rule).
+
+## Deploy
+
+Vercel preview deploys are configured via `vercel.json` + the LogosImpact org's GitHub integration. Every push to `claude/consolidate-openmiami-oss-3xe1u` (or any other branch) gets a unique preview URL on Vercel automatically — no GitHub Action is needed. First-time setup: `vercel link` from this directory; set `VITE_API_BASE` in the Vercel project settings (pointing at wherever the API is deployed).
+
+## What it exercises
+
+- `GET /resources` with `q`, `category`, `language`, and `verse` filters.
+- `GET /resources/:id` for the detail view.
+- `POST /suggest` with the localized thank-you copy from `packages/languages/<lang>.json`.
+- `POST /chat` with BYOK streaming, surfacing the `tool_use` → `tool_result` agent loop visually.
+- The health-score column (`green ≥ 75`, `amber 50–74`, `red < 50`).
+- The verse rollup query (`?verse=miamiverse` returns OpenMiami + LHRT children too).
+
+## What it deliberately omits
+
+- Map view (PostGIS proximity ranking is filed as `Next` on ROADMAP).
+- Persistent state (no `localStorage`).
+- Auth — no moderator surfaces here.
+- Polished design — this is a feedback-driver, not a product.

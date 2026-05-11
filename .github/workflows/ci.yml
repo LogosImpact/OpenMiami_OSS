@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Schema apply + lint + tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: openmiami
+          POSTGRES_PASSWORD: openmiami
+          POSTGRES_DB: openmiami
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U openmiami -d openmiami"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://openmiami:openmiami@localhost:5432/openmiami
+      PGPASSWORD: openmiami
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Apply schema
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=on -f db/schema.sql
+
+      - name: Apply seed
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=on -f db/seed.sql
+
+      - name: Lint front-end
+        run: npm run lint --if-present
+
+      - name: Run tests
+        run: npm test

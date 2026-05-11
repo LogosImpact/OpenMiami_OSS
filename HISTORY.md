@@ -4,6 +4,69 @@ A running, dated log of consolidation moves and decisions. New entries on top.
 
 ---
 
+## 2026-05-11 — Round 3: complementary track to the live `impact-lab` stack
+
+### Context from Discord (#backend, #general — late April / early May 2026)
+
+The OpenMiami_OSS branch was working in parallel with `grantkurz/impact-lab-backend` (Grant Kurz, private) and `arevlo/impact-lab` (Sol Ar, private). The team — Grant, Sol, Mina (`@marshmallow_mina`), Silvio (`@MiamiSilvio` / Logos Capital), and ather.techie — has:
+
+- A working production-style demo deployed at **https://impact-lab-miami.vercel.app/**.
+- Postgres pushed to **Neon** (not Supabase).
+- **BYOK chat** — users paste their own Anthropic key.
+- **Model split**: Sonnet for reasoning, Haiku for ranking (cost-conscious, Sol's call).
+- **Mobile-first** locked in as a hard requirement at the workshop.
+- **WhatsApp channel** wiring in flight, not yet merged.
+- A planned MLHT feedback session as the next ground-truth target.
+
+Grant traveled to India before he could move the backend repo into the LogosImpact GitHub org. Sol's words on the channel: *"let's jam on that Claude project you started for now but we'll figure it out."*
+
+### Goal this round
+
+Make OpenMiami_OSS a **menu of borrowable modules** for Grant's stack, not a competitor. Plus a small clickable surface that exercises what the live demo doesn't show yet — multi-verse, link-health, language switching beyond EN, Sonnet/Haiku model split.
+
+### What landed
+
+- **Monorepo plumbing** — root `package.json` with workspaces, `.env.example`, `.gitignore`, `docker-compose.yml` (postgis/postgis:16-3.4, auto-seeded), `scripts/dev-bootstrap.sh`.
+- **Neon-compatible DB shim** — `api/_lib/db.js` exposes `listResources`, `getResource`, `categoryCounts`, `insertSuggestion` over either `@supabase/supabase-js` (primary; RLS as defense-in-depth) or `pg.Pool` (alternative; aligns with Grant's Neon). Mode auto-detected from env. All four existing routes migrated.
+- **Mobile-first front-end stub** — `apps/miamiverse/` Vite + React + TypeScript SPA. Search / Detail / Suggest / Chat views. Verse switcher (all / miamiverse / openmiami / lhrt). Health-score badges (green ≥ 75 / amber 50–74 / red < 50). Language switcher (EN/HT/ES/FR). BYOK chat input (React state only — no `localStorage`, per ESLint rule). Vercel preview deploys via `vercel.json` + native GitHub integration.
+- **`POST /chat`** — SSE route with server-side tool-loop. When MiaGPT emits `tool_use` for `query_resources`, the route calls `listResources` directly and feeds the result back as a `tool_result` block, looping until done. BYOK key from request body, never persisted.
+- **MiaGPT model split** — `createMiaGPT()` now takes `rankerModel` (default `claude-haiku-4-5-20251001`); reasoning stays on `claude-sonnet-4-6`. New `mia.rank({ candidates, intent, lang })` helper for Haiku re-ranking. `packages/miagpt/README.md` documents the pattern.
+- **Example transcripts** — `examples/miagpt-transcripts/{en-housing,ht-food}.md` so reviewers see what a working answer looks like without burning an API key.
+- **CI** — `.github/workflows/ci.yml` (schema apply against a Postgres+PostGIS service container, lint, `node --test`). `.github/workflows/check-links.yml` (nightly cron + manual dispatch).
+- **Smoke tests** — `api/__tests__/resources.test.js` (CORS + validation unconditionally; happy-path + verse rollup when a DB is configured). `packages/miagpt/__tests__/load-prompts.test.js` (prompt loader + supportedLanguages).
+- **Docs** — `docs/quickstart.md` (10-minute path), `docs/handoff.md` (the round's strategic artifact: what each repo could borrow from the other, who's who, coordination items). `docs/architecture.md` rewritten to cover Supabase vs Neon mode, BYOK chat, WhatsApp track, and the new repo layout. `docs/api-contract.md` extended with `?verse=` and `POST /chat`.
+- **Maintainer block** — `CONTRIBUTING.md` lists Grant, Sol, Silvio, Mina, ather.techie by GitHub handle only (no personal contact info; LogosImpact org for coordination).
+- **MLHT feedback target** — called out at the top of `ROADMAP.md` as the next ground-truth.
+
+### Decisions confirmed
+
+- **Backend posture**: Supabase-primary with a Neon-compatible shim. RLS stays the primary guardrail; the API layer enforces the same constraints in Neon mode. (User picked this over flipping primary to Neon.)
+- **Stub deploys**: Vercel preview URLs on every push via the native GitHub integration. `apps/miamiverse/vercel.json` checked in; no custom Action.
+- **Models**: Sonnet for reasoning + Haiku for ranking, matching the live demo. Both overridable.
+- **No consolidation merge yet** — wait for Grant's repo access.
+
+### Decisions worth re-litigating
+
+- **`/chat` runs the tool-loop server-side, not client-side.** Trade-off: the API does an internal DB call rather than the client doing two HTTP hops. Cleaner UX, hides the key, but the API now needs to scale chat traffic. Revisit if cost or throughput becomes a problem.
+- **Stub vs. production front end.** The live demo at impact-lab-miami.vercel.app is the canonical user-facing surface. The stub in `apps/miamiverse/` is intentionally throwaway — it exercises verse / health / multilingual / BYOK end-to-end so reviewers can see them work, but it's not the deploy target. `IMPORTING.md` documents the swap procedure for when access is granted.
+- **LHRF vs LHRT.** Discord uses LHRF (Fund); this repo uses LHRT (Trust). The OSS schema, seed, and prompts stay on LHRT until the team picks a canonical name — swapping is a one-row update against `public.verses`. Documented in `docs/handoff.md` and `docs/architecture.md`.
+- **MAX_TURNS=4 in `/chat`.** Caps the server-side tool-loop. Enough for one `query_resources` → answer cycle plus a refinement turn. Bump if real users hit it.
+
+### What's still **not** done
+
+- No actual import of `grantkurz/impact-lab-backend` or `arevlo/impact-lab` (both private; access pending Grant's return from India).
+- No moderator console.
+- No WhatsApp wiring on this side (Grant's track; we acknowledge it in architecture).
+- No geocoding of seed `location` columns.
+- No PostGIS proximity ranking on `/resources?zipcode=…`.
+
+### Coordination carryovers
+
+- Saturday 2–5pm ET sync request from Silvio — outstanding; coordination only.
+- When Grant grants repo access, schedule a separate consolidation round using `docs/handoff.md` as the agenda.
+
+---
+
 ## 2026-04-27 — Round 2: multi-verse schema, link-health, privacy, Web3 framing
 
 ### Source-repo access
