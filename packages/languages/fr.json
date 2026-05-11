@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "language": "fr",
+    "name": "Français",
+    "rtl": false
+  },
+  "common": {
+    "search_placeholder": "Comment pouvons-nous vous aider ?",
+    "search_button": "Rechercher",
+    "loading": "Chargement…",
+    "error_generic": "Une erreur est survenue. Veuillez réessayer.",
+    "no_results": "Aucun résultat. Essayez d'autres mots, ou proposez une ressource.",
+    "view_source": "Voir la source",
+    "contact": "Contact",
+    "website": "Site web",
+    "languages_offered": "Langues proposées"
+  },
+  "categories": {
+    "housing": "Logement",
+    "food": "Alimentation",
+    "health": "Santé",
+    "mental_health": "Santé mentale",
+    "small_business": "Petites entreprises",
+    "workforce": "Emploi et formation",
+    "education": "Éducation",
+    "youth": "Jeunesse",
+    "seniors": "Aînés",
+    "immigration": "Immigration",
+    "legal": "Aide juridique",
+    "arts_culture": "Arts et culture",
+    "climate_resilience": "Climat et résilience",
+    "transit": "Transport",
+    "utilities": "Services publics",
+    "civic_311": "Ville et 311",
+    "emergency": "Urgence"
+  },
+  "suggest": {
+    "title": "Proposer une ressource",
+    "intro": "Vous connaissez un service qui devrait figurer dans OpenMiami ? Soumettez-le ici. Un modérateur le vérifiera avant publication.",
+    "name_label": "Nom de la ressource",
+    "url_label": "Site web (lien public)",
+    "description_label": "Que fait-il ?",
+    "category_label": "Catégorie",
+    "language_label": "Langues proposées",
+    "submit": "Envoyer la suggestion",
+    "thanks": "Merci. Votre suggestion est en file de modération."
+  },
+  "miagpt": {
+    "title": "MiaGPT",
+    "tagline": "Assistant civique pour Miami — multilingue.",
+    "input_placeholder": "Posez une question sur le logement, la nourriture, le 311, les petites entreprises…",
+    "privacy_note": "MiaGPT ne garde pas vos messages. N'inscrivez pas d'informations personnelles."
+  }
+}

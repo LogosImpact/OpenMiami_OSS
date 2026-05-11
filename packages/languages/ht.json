@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "language": "ht",
+    "name": "Kreyòl Ayisyen",
+    "rtl": false
+  },
+  "common": {
+    "search_placeholder": "Ki sa w bezwen èd avè l?",
+    "search_button": "Chèche",
+    "loading": "L ap chaje…",
+    "error_generic": "Yon bagay pa mache. Eseye ankò.",
+    "no_results": "Nou pa jwenn anyen. Eseye lòt mo, oswa pwopoze yon resous.",
+    "view_source": "Wè sous la",
+    "contact": "Kontak",
+    "website": "Sit entènèt",
+    "languages_offered": "Lang yo ofri"
+  },
+  "categories": {
+    "housing": "Lojman",
+    "food": "Manje",
+    "health": "Sante",
+    "mental_health": "Sante mantal",
+    "small_business": "Ti biznis",
+    "workforce": "Travay & fòmasyon",
+    "education": "Edikasyon",
+    "youth": "Jèn",
+    "seniors": "Granmoun",
+    "immigration": "Imigrasyon",
+    "legal": "Èd legal",
+    "arts_culture": "Atizay & kilti",
+    "climate_resilience": "Klima & rezilyans",
+    "transit": "Transpò",
+    "utilities": "Sèvis piblik",
+    "civic_311": "Vil & 311",
+    "emergency": "Ijans"
+  },
+  "suggest": {
+    "title": "Pwopoze yon resous",
+    "intro": "Ou konnen yon sèvis ki ta dwe nan OpenMiami? Voye li la a. Yon moderatè ap revize anvan li pibliye.",
+    "name_label": "Non resous la",
+    "url_label": "Sit entènèt (yon lyen piblik)",
+    "description_label": "Ki sa li fè?",
+    "category_label": "Kategori",
+    "language_label": "Lang yo ofri",
+    "submit": "Voye sijesyon",
+    "thanks": "Mèsi. Sijesyon ou nan ke modérasyon."
+  },
+  "miagpt": {
+    "title": "MiaGPT",
+    "tagline": "Asistan sivik pou Miami — nan plizyè lang.",
+    "input_placeholder": "Mande sou lojman, manje, 311, ti biznis…",
+    "privacy_note": "MiaGPT pa estoke mesaj ou. Pa mete enfòmasyon prive."
+  }
+}
